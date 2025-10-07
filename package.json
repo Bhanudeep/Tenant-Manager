@@ -1,0 +1,43 @@
+{
+  "name": "@bhanudeep/tenant-manager",
+  "version": "1.0.1",
+  "description": "A framework-agnostic TypeScript package for multi-tenant applications with dynamic theming, asset management, and configuration loading",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "npm run build",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"Add your preferred linter here\"",
+    "test": "echo \"Add your test runner here\""
+  },
+  "keywords": [
+    "multi-tenant",
+    "theming",
+    "configuration",
+    "asset-management",
+    "typescript",
+    "framework-agnostic"
+  ],
+  "author": "UTU Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bhanudeep/tenant-manager.git"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {}
+}
