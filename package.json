@@ -1,11 +1,33 @@
 {
   "name": "@bhanudeep/tenant-manager",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A framework-agnostic TypeScript package for multi-tenant applications with dynamic theming, asset management, and configuration loading",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./angular": {
+      "import": "./dist/angular/index.js",
+      "require": "./dist/angular/index.js",
+      "types": "./dist/angular/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react/index.js",
+      "require": "./dist/react/index.js",
+      "types": "./dist/react/index.d.ts"
+    },
+    "./vue": {
+      "import": "./dist/vue/index.js",
+      "require": "./dist/vue/index.js",
+      "types": "./dist/vue/index.d.ts"
+    }
+  },
   "files": [
     "dist/**/*",
     "README.md",
@@ -13,10 +35,15 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "npm run build:core && npm run build:adapters",
+    "build": "npm run build:core && npm run build:adapters && npm run build:index",
     "build:core": "tsc -p tsconfig.core.json",
-    "build:adapters": "npm run copy:adapters",
-    "copy:adapters": "mkdir -p dist && cp -r src/angular dist/ && cp -r src/react dist/ && cp -r src/vue dist/ && cp src/index.ts dist/",
+    "build:adapters": "npm run copy:adapters && npm run create:adapter-entries",
+    "copy:adapters": "mkdir -p dist && cp -r src/angular dist/ && cp -r src/react dist/ && cp -r src/vue dist/",
+    "build:index": "tsc src/index.ts --outDir dist --declaration --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck",
+    "create:adapter-entries": "npm run create:angular-entry && npm run create:react-entry && npm run create:vue-entry",
+    "create:angular-entry": "tsc src/angular/index.ts --outDir dist/angular --declaration --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --allowJs",
+    "create:react-entry": "echo 'export * from \"../core/interfaces.js\"; export { TenantConfigCore } from \"../core/tenant-config.core.js\";' > dist/react/index.js && echo 'export * from \"../core/interfaces\"; export { TenantConfigCore } from \"../core/tenant-config.core\"; export declare const TenantConfigProvider: any; export declare function useReactTenantConfig(): any; export declare function withTenantConfig(component: any): any;' > dist/react/index.d.ts",
+    "create:vue-entry": "echo 'export * from \"../core/interfaces.js\"; export { TenantConfigCore } from \"../core/tenant-config.core.js\";' > dist/vue/index.js && echo 'export * from \"../core/interfaces\"; export { TenantConfigCore } from \"../core/tenant-config.core\"; export declare const TenantConfigPlugin: any; export declare function useVueTenantConfig(): any; export declare function useTenantConfigWithInit(options?: any): any; export declare function createTenantConfigPlugin(options?: any): any; export declare const TenantConfigKey: any; export declare const VueTenantConfigPlugin: any;' > dist/vue/index.d.ts",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",

@@ -15,7 +15,7 @@ npm install @bhanudeep/tenant-manager
 ```tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { TenantConfigProvider } from '@bhanudeep/tenant-manager';
+import { TenantConfigProvider } from '@bhanudeep/tenant-manager/react';
 import App from './App';
 import './index.css';
 
@@ -39,7 +39,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ```tsx
 import React from 'react';
-import { useReactTenantConfig } from '@bhanudeep/tenant-manager';
+import { useReactTenantConfig } from '@bhanudeep/tenant-manager/react';
 import Header from './components/Header';
 import TenantInfo from './components/TenantInfo';
 import Actions from './components/Actions';
@@ -71,7 +71,7 @@ export default App;
 
 ```tsx
 import React, { useState } from 'react';
-import { useReactTenantConfig } from '@bhanudeep/tenant-manager';
+import { useReactTenantConfig } from '@bhanudeep/tenant-manager/react';
 import './Header.css';
 
 const Header: React.FC = () => {
@@ -115,7 +115,7 @@ export default Header;
 
 ```tsx
 import React from 'react';
-import { useReactTenantConfig } from '@bhanudeep/tenant-manager';
+import { useReactTenantConfig } from '@bhanudeep/tenant-manager/react';
 import './TenantInfo.css';
 
 const TenantInfo: React.FC = () => {
@@ -172,7 +172,7 @@ export default TenantInfo;
 
 ```tsx
 import React, { useState } from 'react';
-import { useReactTenantConfig } from '@bhanudeep/tenant-manager';
+import { useReactTenantConfig } from '@bhanudeep/tenant-manager/react';
 import './Actions.css';
 
 const Actions: React.FC = () => {
@@ -270,7 +270,7 @@ export default LoadingSpinner;
 
 ```tsx
 import { useEffect, useState } from 'react';
-import { useReactTenantConfig } from '@bhanudeep/tenant-manager';
+import { useReactTenantConfig } from '@bhanudeep/tenant-manager/react';
 
 interface ThemeConfig {
   primaryColor: string;

@@ -62,7 +62,7 @@ npm install @bhanudeep/tenant-manager
 3. **Use in components:**
    ```typescript
    import { Component } from '@angular/core';
-   import { TenantConfigAngularService } from '@bhanudeep/tenant-manager';
+   import { TenantConfigAngularService } from '@bhanudeep/tenant-manager/angular';
 
    @Component({
      selector: 'app-root',
@@ -100,7 +100,7 @@ npm install @bhanudeep/tenant-manager
    ```jsx
    import React from 'react';
    import ReactDOM from 'react-dom/client';
-   import { TenantConfigProvider } from '@bhanudeep/tenant-manager';
+   import { TenantConfigProvider } from '@bhanudeep/tenant-manager/react';
    import App from './App';
 
    const initOptions = {

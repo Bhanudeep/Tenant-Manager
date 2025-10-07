@@ -14,7 +14,7 @@ npm install @bhanudeep/tenant-manager
 
 ```typescript
 import { createApp } from 'vue';
-import { TenantConfigPlugin } from '@bhanudeep/tenant-manager';
+import { TenantConfigPlugin } from '@bhanudeep/tenant-manager/vue';
 import App from './App.vue';
 import './style.css';
 
@@ -51,7 +51,7 @@ app.mount('#app');
 </template>
 
 <script setup lang="ts">
-import { useVueTenantConfig } from '@bhanudeep/tenant-manager';
+import { useVueTenantConfig } from '@bhanudeep/tenant-manager/vue';
 import HeaderComponent from './components/HeaderComponent.vue';
 import TenantInfo from './components/TenantInfo.vue';
 import ActionsComponent from './components/ActionsComponent.vue';
@@ -100,7 +100,7 @@ const { isInitialized } = useVueTenantConfig();
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useVueTenantConfig } from '@bhanudeep/tenant-manager';
+import { useVueTenantConfig } from '@bhanudeep/tenant-manager/vue';
 
 const { tenantCore } = useVueTenantConfig();
 const imageError = ref(false);
@@ -313,7 +313,7 @@ const mode = computed(() => tenantCore.getConfig<string>('mode') || '');
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useVueTenantConfig } from '@bhanudeep/tenant-manager';
+import { useVueTenantConfig } from '@bhanudeep/tenant-manager/vue';
 
 const { tenantCore } = useVueTenantConfig();
 const loading = ref(false);
@@ -484,7 +484,7 @@ export default defineComponent({
 
 ```typescript
 import { computed, watchEffect } from 'vue';
-import { useVueTenantConfig } from '@bhanudeep/tenant-manager';
+import { useVueTenantConfig } from '@bhanudeep/tenant-manager/vue';
 
 interface ThemeConfig {
   primaryColor: string;
@@ -542,7 +542,7 @@ export function useTheme() {
 
 ```typescript
 import { ref, computed, watchEffect } from 'vue';
-import { useVueTenantConfig } from '@bhanudeep/tenant-manager';
+import { useVueTenantConfig } from '@bhanudeep/tenant-manager/vue';
 
 export function useTenantData() {
   const { tenantCore, currentTenant } = useVueTenantConfig();
@@ -599,7 +599,7 @@ export function useTenantData() {
 
 ```typescript
 import { App } from 'vue';
-import { createTenantConfigPlugin } from '@bhanudeep/tenant-manager';
+import { createTenantConfigPlugin } from '@bhanudeep/tenant-manager/vue';
 
 export default {
   install(app: App, options: any = {}) {
@@ -628,7 +628,7 @@ export default {
 ### 11. TypeScript Declarations (`src/types/tenant.d.ts`)
 
 ```typescript
-import { VueTenantConfigState } from '@bhanudeep/tenant-manager';
+import { VueTenantConfigState } from '@bhanudeep/tenant-manager/vue';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -740,7 +740,7 @@ const isDufryTenant = computed(() =>
 // src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router';
 import { inject } from 'vue';
-import { TenantConfigKey } from '@bhanudeep/tenant-manager';
+import { TenantConfigKey } from '@bhanudeep/tenant-manager/vue';
 
 const routes = [
   {

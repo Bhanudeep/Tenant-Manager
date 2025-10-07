@@ -16,7 +16,7 @@ npm install @bhanudeep/tenant-manager
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { TenantConfigAngularService } from '@bhanudeep/tenant-manager';
+import { TenantConfigAngularService } from '@bhanudeep/tenant-manager/angular';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header.component';
 
@@ -57,7 +57,7 @@ export class AppModule { }
 
 ```typescript
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TenantConfigAngularService } from '@bhanudeep/tenant-manager';
+import { TenantConfigAngularService } from '@bhanudeep/tenant-manager/angular';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -184,7 +184,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
-import { TenantConfigAngularService } from '@bhanudeep/tenant-manager';
+import { TenantConfigAngularService } from '@bhanudeep/tenant-manager/angular';
 
 @Component({
   selector: 'app-header',
@@ -367,7 +367,7 @@ You can add an HTTP interceptor to automatically include tenant headers:
 ```typescript
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http';
-import { TenantConfigAngularService } from '@bhanudeep/tenant-manager';
+import { TenantConfigAngularService } from '@bhanudeep/tenant-manager/angular';
 
 @Injectable()
 export class TenantHeaderInterceptor implements HttpInterceptor {
@@ -390,7 +390,7 @@ Create route guards that check tenant configuration:
 ```typescript
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { TenantConfigAngularService } from '@bhanudeep/tenant-manager';
+import { TenantConfigAngularService } from '@bhanudeep/tenant-manager/angular';
 
 @Injectable()
 export class TenantGuard implements CanActivate {
