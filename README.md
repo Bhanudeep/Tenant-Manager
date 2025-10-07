@@ -1,475 +1,341 @@
-# @Bhanudeep/tenant-manager
+# Cross-Framework Tenant Manager
 
-A framework-agnostic TypeScript package for multi-tenant applications with dynamic theming, asset management, and configuration loading.
+A framework-agnostic TypeScript package for multi-tenant applications with dynamic theming, asset management, and configuration loading. Compatible with Angular, React, Vue, and vanilla JavaScript.
 
 ## Features
 
-- 🏢 **Multi-tenant configuration management**
-- 🎨 **Dynamic theming system**
-- 📦 **Asset loading from blob storage and local paths**
-- 🔧 **Framework adapters for React, Angular, and Vue**
-- 📱 **URL parameter parsing for tenant detection**
-- 💾 **Session storage integration**
-- ⚡ **TypeScript first with full type safety**
-- 🌐 **Framework-agnostic core**
+- 🏢 **Multi-tenant support** with dynamic configuration loading
+- 🎨 **Dynamic theming** with CSS injection and mode classes
+- 📦 **Asset management** with tenant-specific resources
+- 🔄 **Caching** with configurable timeout and session storage
+- 🚀 **Framework adapters** for Angular, React, and Vue
+- 📱 **Sub-tenant support** for hierarchical tenant structures
+- 🌐 **API integration** with fallback to local configuration
 
 ## Installation
 
 ```bash
-npm install @Bhanudeep/tenant-manager
+npm install @bhanudeep/tenant-manager
 ```
 
-## Quick Start
+## Framework-Specific Usage
 
-### Vanilla JavaScript/TypeScript
+### Angular Integration
+
+1. **Install the package:**
+   ```bash
+   npm install @bhanudeep/tenant-manager
+   ```
+
+2. **Import and configure in `app.module.ts`:**
+   ```typescript
+   import { NgModule, APP_INITIALIZER } from '@angular/core';
+   import { BrowserModule } from '@angular/platform-browser';
+   import { HttpClientModule } from '@angular/common/http';
+   import { TenantConfigAngularService } from '@bhanudeep/tenant-manager';
+   import { AppComponent } from './app.component';
+
+   export function initializeTenant(tenantService: TenantConfigAngularService) {
+     return tenantService.initializeForAngular({
+       redemptionPartnerCode: 'Privilege_Dufry',
+       subTenantId: 'alipay', // optional
+       k8sUrl: 'https://your-api-url.com'
+     });
+   }
+
+   @NgModule({
+     imports: [BrowserModule, HttpClientModule],
+     providers: [
+       TenantConfigAngularService,
+       {
+         provide: APP_INITIALIZER,
+         useFactory: initializeTenant,
+         deps: [TenantConfigAngularService],
+         multi: true
+       }
+     ],
+     bootstrap: [AppComponent]
+   })
+   export class AppModule {}
+   ```
+
+3. **Use in components:**
+   ```typescript
+   import { Component } from '@angular/core';
+   import { TenantConfigAngularService } from '@bhanudeep/tenant-manager';
+
+   @Component({
+     selector: 'app-root',
+     template: `
+       <div class="tenant-header">
+         <img [src]="logoUrl" [alt]="tenantTitle">
+         <h1>{{ tenantTitle }}</h1>
+       </div>
+     `
+   })
+   export class AppComponent {
+     logoUrl: string;
+     tenantTitle: string;
+
+     constructor(private tenantConfig: TenantConfigAngularService) {
+       this.logoUrl = this.tenantConfig.getConfig('storeLogo');
+       this.tenantTitle = this.tenantConfig.getConfig('title');
+       
+       // Subscribe to tenant changes
+       this.tenantConfig.getCurrentTenant$().subscribe(tenant => {
+         console.log('Current tenant:', tenant);
+       });
+     }
+   }
+   ```
+
+### React Integration
+
+1. **Install the package:**
+   ```bash
+   npm install @bhanudeep/tenant-manager
+   ```
+
+2. **Wrap your app with `TenantConfigProvider` in `index.tsx`:**
+   ```jsx
+   import React from 'react';
+   import ReactDOM from 'react-dom/client';
+   import { TenantConfigProvider } from '@bhanudeep/tenant-manager';
+   import App from './App';
+
+   const initOptions = {
+     redemptionPartnerCode: 'Privilege_Dufry',
+     subTenantId: 'alipay', // optional
+     k8sUrl: 'https://your-api-url.com'
+   };
+
+   ReactDOM.createRoot(document.getElementById('root')).render(
+     <TenantConfigProvider initOptions={initOptions}>
+       <App />
+     </TenantConfigProvider>
+   );
+   ```
+
+3. **Use the `useTenantConfig` hook in components:**
+   ```jsx
+   import React from 'react';
+   import { useReactTenantConfig } from '@bhanudeep/tenant-manager';
+
+   function MyComponent() {
+     const { 
+       currentTenant, 
+       currentSubTenant, 
+       isInitialized, 
+       getConfig, 
+       getAllConfig 
+     } = useReactTenantConfig();
+
+     const logoUrl = getConfig('storeLogo');
+     const title = getConfig('title');
+     const currencySymbol = getConfig('currencySymbol');
+
+     if (!isInitialized) {
+       return <div>Loading tenant configuration...</div>;
+     }
+
+     return (
+       <div className="tenant-header">
+         <img src={logoUrl} alt={title} />
+         <h1>{title}</h1>
+         <p>Current tenant: {currentTenant}</p>
+         {currentSubTenant && <p>Sub-tenant: {currentSubTenant}</p>}
+         <p>Currency: {currencySymbol}</p>
+       </div>
+     );
+   }
+
+   export default MyComponent;
+   ```
+
+### Vue Integration
+
+1. **Install the package:**
+   ```bash
+   npm install @bhanudeep/tenant-manager
+   ```
+
+2. **Install the plugin in `main.ts`:**
+   ```typescript
+   import { createApp } from 'vue';
+   import { TenantConfigPlugin } from '@bhanudeep/tenant-manager';
+   import App from './App.vue';
+
+   const app = createApp(App);
+
+   app.use(TenantConfigPlugin, {
+     autoInitialize: true,
+     initOptions: {
+       redemptionPartnerCode: 'Privilege_Dufry',
+       subTenantId: 'alipay', // optional
+       k8sUrl: 'https://your-api-url.com'
+     }
+   });
+
+   app.mount('#app');
+   ```
+
+3. **Use in Vue components:**
+
+   **Composition API:**
+   ```vue
+   <template>
+     <div class="tenant-header" v-if="isInitialized">
+       <img :src="logoUrl" :alt="title" />
+       <h1>{{ title }}</h1>
+       <p>Current tenant: {{ currentTenant }}</p>
+       <p v-if="currentSubTenant">Sub-tenant: {{ currentSubTenant }}</p>
+     </div>
+     <div v-else>Loading tenant configuration...</div>
+   </template>
+
+   <script setup>
+   import { computed } from 'vue';
+   import { useVueTenantConfig } from '@bhanudeep/tenant-manager';
+
+   const { currentTenant, currentSubTenant, isInitialized, tenantCore } = useVueTenantConfig();
+
+   const logoUrl = computed(() => tenantCore.getConfig('storeLogo'));
+   const title = computed(() => tenantCore.getConfig('title'));
+   </script>
+   ```
+
+   **Options API:**
+   ```vue
+   <template>
+     <div class="tenant-header">
+       <img :src="logoUrl" :alt="title" />
+       <h1>{{ title }}</h1>
+     </div>
+   </template>
+
+   <script>
+   export default {
+     computed: {
+       logoUrl() {
+         return this.$getTenantConfig('storeLogo');
+       },
+       title() {
+         return this.$getTenantConfig('title');
+       }
+     }
+   };
+   </script>
+   ```
+
+## Core API Reference
+
+### `TenantConfigCore`
+
+The main class that handles tenant configuration logic.
+
+#### Methods
+
+- `initializeTenant(options: ITenantInitOptions): Promise<void>`
+- `getCurrentTenant(): string`
+- `getCurrentSubTenant(): string | null`
+- `getConfig<T>(key: string): T | undefined`
+- `getAllConfig(): ITenantConfig | undefined`
+- `updateAssetMapping(tenantCode: string, config: IAssetMapping[string]): void`
+- `clearCache(tenantCode?: string): void`
+
+#### Properties
+
+- `currentTenant$: Observable<string>` - Observable for current tenant changes
+- `currentSubTenant$: Observable<string | null>` - Observable for sub-tenant changes
+
+### Configuration Interface
 
 ```typescript
-import { TenantManager, ThemeManager } from '@Bhanudeep/tenant-manager';
-
-// Initialize with configuration
-const tenantManager = new TenantManager({
-  apiBaseUrl: 'https://your-api.com',
-  enableAutoTheming: true,
-  enableUrlParsing: true,
-  onTenantChange: (tenantId, subTenantId) => {
-    console.log('Tenant changed:', tenantId, subTenantId);
-  }
-});
-
-// Initialize the manager
-await tenantManager.initialize();
-
-// Get current configuration
-const config = tenantManager.getCurrentConfig();
-console.log('Tenant config:', config);
-
-// Get asset paths
-const logoPath = tenantManager.getAssetPath('partnerLogo');
-```
-
-### React
-
-```typescript
-import React from 'react';
-import { createTenantHook } from '@Bhanudeep/tenant-manager/react';
-
-// Create the hook with configuration
-const useTenant = createTenantHook();
-
-function MyComponent() {
-  const { 
-    currentTenant, 
-    config, 
-    getAssetPath, 
-    switchTenant 
-  } = useTenant({
-    apiBaseUrl: 'https://your-api.com',
-    enableAutoTheming: true
-  });
-
-  return (
-    <div>
-      <h1>Current Tenant: {currentTenant}</h1>
-      <img src={getAssetPath('partnerLogo') || ''} alt="Partner Logo" />
-      <button onClick={() => switchTenant('newTenant')}>
-        Switch Tenant
-      </button>
-    </div>
-  );
+interface ITenantInitOptions {
+  redemptionPartnerCode: string;
+  subTenantId?: string;
+  k8sUrl?: string;
+  cacheTimeout?: number; // in milliseconds, default: 24 hours
 }
-```
 
-### Angular
-
-```typescript
-// tenant.service.ts
-import { Injectable } from '@angular/core';
-import { createAngularTenantService } from '@Bhanudeep/tenant-manager/angular';
-
-@Injectable({ providedIn: 'root' })
-export class TenantService extends createAngularTenantService({
-  apiBaseUrl: 'https://your-api.com',
-  enableAutoTheming: true
-}) {}
-
-// app.module.ts
-import { APP_INITIALIZER } from '@angular/core';
-import { createAngularInitializer } from '@Bhanudeep/tenant-manager/angular';
-
-@NgModule({
-  providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: createAngularInitializer,
-      deps: [TenantService],
-      multi: true
-    }
-  ]
-})
-export class AppModule {}
-
-// component.ts
-import { Component } from '@angular/core';
-import { TenantService } from './tenant.service';
-
-@Component({
-  template: `
-    <h1>Current Tenant: {{ tenantService.getCurrentTenant() }}</h1>
-    <img [src]="tenantService.getAssetPath('partnerLogo')" alt="Logo">
-  `
-})
-export class MyComponent {
-  constructor(public tenantService: TenantService) {}
-}
-```
-
-### Vue 3
-
-```typescript
-// main.ts
-import { createApp } from 'vue';
-import { createTenantPlugin } from '@Bhanudeep/tenant-manager/vue';
-
-const app = createApp(App);
-app.use(createTenantPlugin({
-  apiBaseUrl: 'https://your-api.com'
-}));
-
-// component.vue
-<template>
-  <div>
-    <h1>Current Tenant: {{ currentTenant }}</h1>
-    <img :src="getAssetPath('partnerLogo')" alt="Logo">
-  </div>
-</template>
-
-<script setup>
-import { createUseTenant } from '@Bhanudeep/tenant-manager/vue';
-
-const useTenant = createUseTenant();
-const { currentTenant, getAssetPath } = useTenant();
-</script>
-```
-
-## Configuration Options
-
-```typescript
-interface InitializationOptions {
-  // API Configuration
-  apiBaseUrl?: string;                    // Base URL for tenant API
-  customHeaders?: Record<string, string>; // Custom headers for API requests
-  
-  // Storage Configuration
-  storageKey?: string;                    // Session storage key for tenant (default: 'RedemptionPartnerCode')
-  subTenantStorageKey?: string;          // Session storage key for sub-tenant (default: 'tenant')
-  enableSessionStorage?: boolean;         // Enable session storage (default: true)
-  
-  // URL Parameter Configuration
-  urlParamKey?: string;                   // URL parameter for tenant (default: 'RedemptionPartnerCode')
-  subTenantParamKey?: string;            // URL parameter for sub-tenant (default: 'tenant')
-  encodedParamKey?: string;              // Encoded parameter key (default: 'p')
-  enableUrlParsing?: boolean;            // Enable URL parsing (default: true)
-  
-  // Theming
-  enableAutoTheming?: boolean;           // Enable automatic theming (default: true)
-  
-  // Defaults
-  defaultTenant?: string;                // Default tenant ID (default: 'default')
-  
-  // Callbacks
-  onError?: (error: Error) => void;
-  onTenantChange?: (tenantId: string, subTenantId?: string) => void;
-  onConfigLoad?: (config: TenantConfig) => void;
-}
-```
-
-## Tenant Configuration Structure
-
-```typescript
-interface TenantConfig {
-  // Asset paths
+interface ITenantConfig {
+  mode: string;
+  redemptionPartnerCode: string;
+  country: string;
+  title: string;
+  currencySymbol: string;
   welcomeImg?: string;
-  partnerLogo?: string;
-  partnerImg?: string;
-  combinedLogo?: string;
   storeLogo?: string;
-  welcomevouchertypePath?: string;
-  vouchertypePath?: string;
+  partnerName?: string;
   termsAndConditionsPath?: string;
   privacyPolicyPath?: string;
-  countryList?: string;
-  showBanner?: string;
-  
-  // Configuration
-  mode?: string;                          // CSS mode class
-  redemptionPartnerCode?: string;
-  country?: string;
-  title?: string;
-  currencySymbol?: string;
-  partnerName?: string;
-  paymentPartner?: string;               // 'stripe', 'paypal', etc.
-  clicker?: string | boolean;
-  
-  // Sub-tenants
-  subTenants?: {
-    [key: string]: TenantConfig;
-  };
-  
-  // Custom properties
-  [key: string]: any;
-}
-```
-
-## Dynamic Theming
-
-The package includes a powerful theming system that can be configured per tenant:
-
-```typescript
-import { ThemeManager } from '@Bhanudeep/tenant-manager';
-
-const themeManager = ThemeManager.getInstance();
-
-// Register themes
-themeManager.registerThemes({
-  'tenant1': {
-    'primary-color': '#de021b',
-    'background-color': '#171c1c',
-    'background-image': 'url(../assets/tenant1/gradient.svg)'
-  },
-  'tenant2': {
-    'primary-color': '#0bc9ac',
-    'background-color': '#ffffff',
-    'background-image': 'url(../assets/tenant2/gradient.svg)'
-  }
-});
-
-// Apply theme
-themeManager.applyTheme('tenant1');
-```
-
-### CSS Variables
-
-The theme system automatically sets CSS variables that you can use in your stylesheets:
-
-```css
-.my-component {
-  color: var(--tenant-primary-color);
-  background: var(--tenant-background-color);
-  background-image: var(--tenant-background-image);
-}
-
-/* Mode-specific styles */
-.tenant1-mode .special-element {
-  border: 2px solid var(--tenant-primary-color);
+  // ... extensible with additional properties
 }
 ```
 
 ## Asset Management
 
-```typescript
-import { AssetManager } from '@Bhanudeep/tenant-manager';
+The package supports hierarchical asset management:
 
-const assetManager = new AssetManager();
-
-// Preload images for better performance
-const imagePaths = ['logo.png', 'background.jpg', 'banner.svg'];
-await assetManager.preloadImages(imagePaths);
-
-// Change favicon dynamically
-assetManager.changeFavicon('/assets/tenant1/favicon.ico');
-
-// Update page title
-assetManager.updateTitle('Tenant 1 - My App');
-
-// Get asset URL with cache busting
-const logoUrl = assetManager.getAssetUrl('/assets/logo.png', true);
+```
+assets/
+└── tenants/
+    ├── Privilege_Dufry/
+    │   ├── images/
+    │   │   └── logo.png
+    │   ├── styles/
+    │   │   └── tenant.css
+    │   └── alipay/          # Sub-tenant
+    │       └── styles/
+    │           └── tenant.css
+    └── default/
+        ├── images/
+        └── styles/
 ```
 
-## URL Parameter Formats
+## Dynamic Theming
 
-The package supports multiple URL parameter formats for tenant detection:
+The package automatically:
+1. Applies CSS mode classes to `document.body`
+2. Loads tenant-specific CSS files
+3. Handles sub-tenant style overrides
 
-### Direct Parameters
-```
-https://myapp.com/#/page?RedemptionPartnerCode=tenant1&tenant=subtenant1
-```
+CSS classes applied:
+- Main tenant: `{mode}-mode` (e.g., `Privilege_Dufry-mode`)
+- Sub-tenant: `{mode}-{subTenant}-mode` (e.g., `Privilege_Dufry-alipay-mode`)
 
-### Encoded Parameters
-```
-https://myapp.com/#/page?p=eyJDb2RlIjoidGVuYW50MSIsIlRlbmFudCI6InN1YnRlbmFudDEifQ==
-```
+## Caching
 
-The encoded parameter should be a base64-encoded JSON object:
-```json
-{
-  "Code": "tenant1",
-  "Tenant": "subtenant1"
-}
-```
+Configuration is automatically cached in `sessionStorage` with:
+- Configurable timeout (default: 24 hours)
+- Automatic cache invalidation
+- Fallback to local asset mapping
 
-## Configuration Validation
+## Framework-Agnostic Usage
+
+You can also use the core functionality without framework adapters:
 
 ```typescript
-import { ConfigValidator } from '@Bhanudeep/tenant-manager';
+import { TenantConfigCore, IHttpClient } from '@bhanudeep/tenant-manager';
 
-// Validate configuration
-const { isValid, errors } = ConfigValidator.validateTenantConfig(config);
-if (!isValid) {
-  console.error('Configuration errors:', errors);
-}
-
-// Sanitize configuration
-const sanitizedConfig = ConfigValidator.sanitizeConfig(rawConfig);
-
-// Validate encoded parameters
-const tenantInfo = ConfigValidator.validateEncodedParam(encodedParam);
-```
-
-## API Integration
-
-The package can fetch tenant configurations from your backend API. The API should return a response in this format:
-
-```json
-{
-  "success": true,
-  "data": {
-    "partnerLogo": "https://blob.storage.com/tenant1/logo.png",
-    "partnerImg": "https://blob.storage.com/tenant1/background.jpg",
-    "mode": "tenant1-mode",
-    "title": "Tenant 1 Application",
-    "primaryColor": "#de021b",
-    "paymentPartner": "stripe",
-    "clicker": true,
-    "subTenants": {
-      "subtenant1": {
-        "partnerLogo": "https://blob.storage.com/tenant1/subtenant1/logo.png",
-        "mode": "tenant1-subtenant1-mode"
-      }
-    }
-  }
-}
-```
-
-## Events
-
-Listen to tenant management events:
-
-```typescript
-tenantManager.on('tenantChange', (payload) => {
-  console.log('Tenant changed:', payload.tenantId, payload.subTenantId);
-});
-
-tenantManager.on('configLoad', (payload) => {
-  console.log('Configuration loaded:', payload.config);
-});
-
-tenantManager.on('error', (payload) => {
-  console.error('Error occurred:', payload.error);
-});
-```
-
-## Best Practices
-
-### 1. Initialize Early
-Initialize the tenant manager as early as possible in your application lifecycle:
-
-```typescript
-// In your main.ts or index.ts
-import { initializeTenantManager } from '@Bhanudeep/tenant-manager';
-
-async function bootstrap() {
-  const tenantManager = await initializeTenantManager({
-    apiBaseUrl: process.env.REACT_APP_API_URL,
-    enableAutoTheming: true
-  });
-  
-  // Start your app after tenant initialization
-  startApp();
-}
-
-bootstrap().catch(console.error);
-```
-
-### 2. Error Handling
-Always handle initialization errors gracefully:
-
-```typescript
-const tenantManager = new TenantManager({
-  onError: (error) => {
-    // Log error to your monitoring service
-    console.error('Tenant Manager Error:', error);
-    
-    // Show user-friendly error message
-    showErrorToast('Failed to load tenant configuration');
-  }
-});
-```
-
-### 3. Asset Preloading
-Preload critical assets during initialization:
-
-```typescript
-tenantManager.on('configLoad', async (payload) => {
-  const assetManager = new AssetManager();
-  const imagePaths = assetManager.extractImagePaths(payload.config);
-  
-  // Preload images in the background
-  assetManager.preloadImages(imagePaths, { lazyLoad: true }).catch(console.warn);
-});
-```
-
-### 4. Caching
-The package automatically caches configurations, but you can clear them when needed:
-
-```typescript
-// Clear cached configurations
-tenantManager.destroy();
-
-// Reinitialize with fresh data
-await tenantManager.initialize();
-```
-
-## TypeScript Support
-
-The package is built with TypeScript and provides full type safety:
-
-```typescript
-import type { TenantConfig, InitializationOptions } from '@Bhanudeep/tenant-manager';
-
-// Type-safe configuration
-const config: InitializationOptions = {
-  apiBaseUrl: 'https://api.example.com',
-  enableAutoTheming: true,
-  onTenantChange: (tenantId: string, subTenantId?: string) => {
-    // TypeScript ensures correct parameter types
-    console.log(`Switched to ${tenantId}/${subTenantId || 'main'}`);
+// Implement HTTP client for your environment
+const httpClient: IHttpClient = {
+  get: async (url, options) => {
+    const response = await fetch(url, { headers: options?.headers });
+    return response.json();
   }
 };
 
-// Type-safe asset access
-const assetPath: string | null = tenantManager.getAssetPath('partnerLogo');
+const tenantManager = new TenantConfigCore(httpClient);
+
+await tenantManager.initializeTenant({
+  redemptionPartnerCode: 'Privilege_Dufry',
+  k8sUrl: 'https://your-api-url.com'
+});
+
+const title = tenantManager.getConfig('title');
 ```
-
-## Browser Support
-
-- Modern browsers (ES2020+)
-- Chrome 80+
-- Firefox 72+
-- Safari 13.1+
-- Edge 80+
 
 ## License
 
 MIT
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## Support
-
-For issues and questions, please use the GitHub issue tracker.

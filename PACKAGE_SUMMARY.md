@@ -1,6 +1,6 @@
 # Package Summary
 
-## @bhanudeepsimhadri/tenant-manager
+## @bhanudeep/tenant-manager
 
 ✅ **Successfully created a comprehensive TypeScript NPM package** for multi-tenant applications!
 
@@ -96,28 +96,28 @@ The package is now ready to be published to NPM! See `PUBLISHING.md` for detaile
 
 **Vanilla TypeScript:**
 ```typescript
-import { TenantManager } from '@bhanudeepsimhadri/tenant-manager';
+import { TenantManager } from '@bhanudeep/tenant-manager';
 const manager = new TenantManager({ apiBaseUrl: 'https://api.com' });
 await manager.initialize();
 ```
 
 **React:**
 ```typescript
-import { createTenantHook } from '@bhanudeepsimhadri/tenant-manager/react';
+import { createTenantHook } from '@bhanudeep/tenant-manager/react';
 const useTenant = createTenantHook();
 const { currentTenant, config } = useTenant({ apiBaseUrl: 'https://api.com' });
 ```
 
 **Angular:**
 ```typescript
-import { createAngularTenantService } from '@bhanudeepsimhadri/tenant-manager/angular';
+import { createAngularTenantService } from '@bhanudeep/tenant-manager/angular';
 @Injectable()
 export class TenantService extends createAngularTenantService({ apiBaseUrl: 'https://api.com' }) {}
 ```
 
 **Vue:**
 ```typescript
-import { createUseTenant } from '@bhanudeepsimhadri/tenant-manager/vue';
+import { createUseTenant } from '@bhanudeep/tenant-manager/vue';
 const useTenant = createUseTenant({ apiBaseUrl: 'https://api.com' });
 const { currentTenant, config } = useTenant();
 ```

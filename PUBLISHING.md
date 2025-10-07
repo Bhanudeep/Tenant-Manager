@@ -43,7 +43,7 @@
    ```
 
 ### Publishing Scoped Packages
-If using a scoped package name (like `@bhanudeepsimhadri/tenant-manager`):
+If using a scoped package name (like `@bhanudeep/tenant-manager`):
 ```bash
 npm publish --access public
 ```
@@ -75,14 +75,14 @@ npm publish --tag alpha
 
 Users can install these with:
 ```bash
-npm install @bhanudeepsimhadri/tenant-manager@beta
-npm install @bhanudeepsimhadri/tenant-manager@alpha
+npm install @bhanudeep/tenant-manager@beta
+npm install @bhanudeep/tenant-manager@alpha
 ```
 
 ## Unpublishing
 
 If you need to unpublish (use sparingly):
 ```bash
-npm unpublish @bhanudeepsimhadri/tenant-manager@1.0.0  # Specific version
-npm unpublish @bhanudeepsimhadri/tenant-manager --force  # Entire package (within 24 hours)
+npm unpublish @bhanudeep/tenant-manager@1.0.0  # Specific version
+npm unpublish @bhanudeep/tenant-manager --force  # Entire package (within 24 hours)
 ```

@@ -1,6 +1,6 @@
 {
   "name": "@bhanudeep/tenant-manager",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A framework-agnostic TypeScript package for multi-tenant applications with dynamic theming, asset management, and configuration loading",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -13,7 +13,10 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:core && npm run build:adapters",
+    "build:core": "tsc -p tsconfig.core.json",
+    "build:adapters": "npm run copy:adapters",
+    "copy:adapters": "mkdir -p dist && cp -r src/angular dist/ && cp -r src/react dist/ && cp -r src/vue dist/ && cp src/index.ts dist/",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
@@ -34,10 +37,32 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Bhanudeep/tenant-manager.git"
+    "url": "https://github.com/Bhanudeep/Tenant-Manager.git"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "rxjs": "^7.8.0"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=16.0.0",
+    "@angular/core": ">=16.0.0",
+    "react": ">=18.0.0",
+    "vue": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular/common": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
+  }
 }
